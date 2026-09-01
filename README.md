@@ -1,0 +1,1 @@
+FoodieHub is a web application where users can browse restaurants, order food online, make payments, and track their orders. Restaurant owners can manage menus and orders, while admins manage the platform.
