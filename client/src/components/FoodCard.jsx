@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 function FoodCard(props) {
-  console.log("Food image:", props.image);
   const [quantity, setQuantity] = useState(1);
 
   async function addToCart() {
@@ -25,9 +24,12 @@ function FoodCard(props) {
           }
         );
 
+        const text = await response.text();
+
+        console.log("Cart response:", response.status, text);
+
         if (!response.ok) {
-          const data = await response.json();
-          alert(data.message || "Failed to add item to cart");
+          alert(`Cart error: ${response.status} - ${text}`);
           return;
         }
       }
@@ -39,8 +41,8 @@ function FoodCard(props) {
       window.location.reload();
 
     } catch (error) {
-      console.error("Error adding food to cart:", error);
-      alert("Something went wrong!");
+      console.error("REAL ERROR:", error);
+      alert(`Something went wrong: ${error.message}`);
     }
   }
 
@@ -48,8 +50,11 @@ function FoodCard(props) {
     <div className="food-card">
 
       <div className="food-image">
-  <img src={props.image} alt={props.name} />
-</div>
+        <img
+          src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80"
+          alt={props.name}
+        />
+      </div>
 
       <h2>{props.name}</h2>
 
