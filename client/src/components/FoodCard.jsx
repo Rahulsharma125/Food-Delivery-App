@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 function FoodCard(props) {
+  console.log("Food image:", props.image);
   const [quantity, setQuantity] = useState(1);
 
   async function addToCart() {
@@ -12,27 +13,31 @@ function FoodCard(props) {
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/cart/add/${props.id}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      for (let i = 0; i < quantity; i++) {
+        const response = await fetch(
+          `http://localhost:8000/api/cart/add/${props.id}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const data = await response.json();
+          alert(data.message || "Failed to add item to cart");
+          return;
         }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message || "Failed to add item to cart");
-        return;
       }
 
-      alert("Food added to cart successfully!");
+      alert(`${quantity} item(s) added to cart successfully!`);
 
-      console.log("Add to cart response:", data);
+      setQuantity(1);
+
+      window.location.reload();
+
     } catch (error) {
       console.error("Error adding food to cart:", error);
       alert("Something went wrong!");
@@ -40,32 +45,55 @@ function FoodCard(props) {
   }
 
   return (
-    <div>
+    <div className="food-card">
+
+      <div className="food-image">
+  <img src={props.image} alt={props.name} />
+</div>
+
       <h2>{props.name}</h2>
 
-      <p>Price: ₹{props.price}</p>
+      <p className="food-rating">
+        ⭐ {props.rating}
+      </p>
 
-      <p>Quantity: {quantity}</p>
+      <p className="food-description">
+        {props.description}
+      </p>
+
+      <p className="food-price">
+        ₹{props.price}
+      </p>
+
+      <div className="quantity-controls">
+
+        <button
+          onClick={() => {
+            if (quantity > 1) {
+              setQuantity(quantity - 1);
+            }
+          }}
+        >
+          -
+        </button>
+
+        <span>Quantity: {quantity}</span>
+
+        <button
+          onClick={() => setQuantity(quantity + 1)}
+        >
+          +
+        </button>
+
+      </div>
 
       <button
-        onClick={() => {
-          if (quantity > 1) {
-            setQuantity(quantity - 1);
-          }
-        }}
+        className="add-cart-btn"
+        onClick={addToCart}
       >
-        -
+        🛒 Add to Cart
       </button>
 
-      <button onClick={() => setQuantity(quantity + 1)}>
-        +
-      </button>
-
-      <br />
-
-      <button onClick={addToCart}>
-        Add to Cart
-      </button>
     </div>
   );
 }
